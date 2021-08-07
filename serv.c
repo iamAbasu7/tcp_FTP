@@ -39,16 +39,31 @@ void *connection_handler(void *arg)
 	int rb=0;
    	char rbuf[1024];
    	char filename[1024];
+	char string[1024];
    	int leave_flag = 0;
    	cli_count++;
    	int z=0;
 
-   	z=recv(cli->sockfd, filename, 1024, 0);
+   	z=recv(cli->sockfd, string, 1024, 0);
 	if(z<=0)
 	{
 		printf("Filename not received\n");
 	//	goto S;
 		
+	}
+	char *ptr=string+strlen(string);
+	int len=strlen(string);
+	while(len)
+	{
+		ptr--;
+		len--;
+		if(*ptr=='/')
+		{
+			ptr++;
+			//filename=(char *)malloc(sizeof(ptr));
+			strcpy(filename,ptr);
+			break;
+		}
 	}
 	//char str[1024];
 	char *str;
@@ -66,10 +81,7 @@ void *connection_handler(void *arg)
 		//sprintf(num,"%d",uid);
 	//*str=(char *)malloc((strlen(str)+1)*sizeof(char));
 	FILE *file;
-	char *h;
-	char *no;
 	char ch[7]="(copy)";
-	h=strdup(ch);
 	//no=strdup(
 	int i=1;
 	int a=0;	
@@ -107,7 +119,8 @@ void *connection_handler(void *arg)
 		//memset(str,0,strlen(str));
 		//free(str);
 	}
-	
+	char location[1024]="/home/antar/Documents/FileTransfer/Server_/";
+	strncat(location,str,strlen(str));
 	//strcpy(cli->filename,str);
 		
         memset(rbuf,0,sizeof(rbuf));
@@ -115,7 +128,7 @@ void *connection_handler(void *arg)
 	{
        		FILE *out;
         	//out = fopen(cli->filename, "a");
-		out=fopen(str,"a");
+		out=fopen(location,"a");
         	printf("%s\n", rbuf);
         	fwrite(rbuf,1,strlen(rbuf),out);
         	bzero(rbuf,1024);
